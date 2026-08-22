@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>JARVIS // Personal AI</title>
+<style>
+:root{--cyan:#55eaff;--blue:#238cff;--bg:#02070c;--panel:rgba(5,18,28,.78);--line:rgba(85,234,255,.28);--text:#dffbff;--muted:#79a6b4}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% 45%,#0b2638 0,#031018 30%,#02070c 67%);color:var(--text);font:14px system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh;overflow:hidden}
+.scan{position:fixed;inset:0;pointer-events:none;background:linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px);background-size:100% 4px;mix-blend-mode:screen}
+.app{min-height:100vh;display:grid;grid-template-rows:72px 1fr 88px;padding:0 24px;position:relative}
+header{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);letter-spacing:.18em}
+.brand{font-weight:700;font-size:18px}.brand span{color:var(--cyan);font-weight:400}.status{font-size:11px;color:#77ffbd;display:flex;gap:8px;align-items:center}.dot{width:7px;height:7px;background:#77ffbd;border-radius:50%;box-shadow:0 0 12px #77ffbd}
+main{display:grid;grid-template-columns:260px 1fr 260px;gap:24px;align-items:center;max-width:1400px;width:100%;margin:auto}
+.card{background:var(--panel);border:1px solid var(--line);box-shadow:0 0 40px rgba(0,170,255,.06);backdrop-filter:blur(12px);padding:18px}
+h3{font-size:10px;letter-spacing:.18em;color:var(--muted);margin:0 0 14px}.metric{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(85,234,255,.1)}.metric b{color:var(--cyan);font-weight:500}
+.reactor{width:310px;height:310px;border-radius:50%;margin:auto;position:relative;display:grid;place-items:center;filter:drop-shadow(0 0 25px rgba(65,220,255,.55))}
+.ring{position:absolute;border:1px solid var(--cyan);border-radius:50%;animation:spin 12s linear infinite}.r1{inset:0}.r2{inset:23px;border-style:dashed;animation-duration:8s;animation-direction:reverse}.r3{inset:53px;box-shadow:0 0 40px rgba(85,234,255,.4),inset 0 0 35px rgba(85,234,255,.35)}.core{width:92px;height:92px;border-radius:50%;background:radial-gradient(circle,#fff 0,#baf8ff 18%,#4ddfff 45%,#1678aa 70%,transparent 72%);box-shadow:0 0 30px #55eaff,0 0 80px #238cff;animation:pulse 2s ease-in-out infinite}.orbit{position:absolute;inset:-12px;border:1px solid rgba(85,234,255,.18);border-radius:50%;transform:rotate(30deg) skewX(-15deg)}
+@keyframes spin{to{transform:rotate(360deg)}}@keyframes pulse{50%{transform:scale(1.08);box-shadow:0 0 45px #55eaff,0 0 110px #238cff}}
+.center{text-align:center}.center .label{margin-top:22px;letter-spacing:.25em;color:var(--muted);font-size:11px}.reply{min-height:40px;max-width:560px;margin:16px auto 0;color:#c9f7ff;line-height:1.6}
+.chat{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);width:min(720px,calc(100% - 32px));display:flex;gap:8px;background:rgba(2,12,19,.9);border:1px solid var(--line);padding:8px;border-radius:12px;box-shadow:0 0 30px rgba(0,180,255,.1)}input{flex:1;background:transparent;border:0;outline:0;color:white;padding:12px;font-size:14px}button{border:1px solid var(--line);background:rgba(35,140,255,.12);color:var(--cyan);padding:0 18px;border-radius:8px;cursor:pointer}button:hover{background:rgba(35,140,255,.25)}#mic{min-width:52px;font-size:18px}
+.log{height:150px;overflow:auto;font:11px ui-monospace,monospace;color:#87bdca}.log div{margin:6px 0}.accent{color:var(--cyan)}
+@media(max-width:900px){main{grid-template-columns:1fr}.card{display:none}.reactor{width:250px;height:250px}.app{padding:0 12px}}
+</style>
+</head>
+<body>
+<div class="scan"></div>
+<div class="app">
+<header><div class="brand">JARVIS <span>// PERSONAL AI SYSTEM</span></div><div class="status"><i class="dot"></i> ONLINE</div></header>
+<main>
+<section class="card"><h3>SYSTEM TELEMETRY</h3><div class="metric"><span>CORE</span><b>STABLE</b></div><div class="metric"><span>NEURAL LINK</span><b>READY</b></div><div class="metric"><span>LATENCY</span><b id="lat">-- ms</b></div><div class="metric"><span>MODE</span><b>ASSIST</b></div></section>
+<section class="center"><div class="reactor"><div class="ring r1"></div><div class="ring r2"></div><div class="ring r3"></div><div class="orbit"></div><div class="core"></div></div><div class="label">J A R V I S &nbsp; // &nbsp; STANDBY</div><div class="reply" id="reply">Good evening. Systems are online. How may I assist?</div><div id="voiceState" style="font-size:10px;letter-spacing:.18em;color:#79a6b4;margin-top:10px">VOICE STANDBY</div></section>
+<section class="card"><h3>ACTIVITY STREAM</h3><div class="log" id="log"><div><span class="accent">00:00:01</span> Boot sequence complete</div><div><span class="accent">00:00:02</span> Neural interface ready</div><div><span class="accent">00:00:03</span> Awaiting command</div></div></section>
+</main>
+<div class="chat"><input id="input" autocomplete="off" placeholder="Ask JARVIS anything…"><button id="mic" title="Voice input">🎙</button><button id="send">SEND</button></div>
+</div>
+<script>
+const SUPABASE_URL="https://grdbpodxopfnicbfulam.supabase.co";
+const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdyZGJwb2R4b3BmbmljYmZ1bGFtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODczMjE2MTIsImV4cCI6MjEwMjg5NzYxMn0.4VeJMArPa3YyjOo9A5kiQRRfPCkzA7qw_-iZe0oinKg";
+const reply=document.querySelector("#reply"), input=document.querySelector("#input"), log=document.querySelector("#log"), lat=document.querySelector("#lat");
+function addLog(t){const d=document.createElement("div");d.innerHTML=`<span class="accent">${new Date().toLocaleTimeString()}</span> ${t}`;log.prepend(d)}
+async function ask(){
+ const message=input.value.trim(); if(!message)return;
+ input.value=""; reply.textContent="Processing…"; addLog("Command received");
+ const t=performance.now();
+ try{
+  const r=await fetch(`${SUPABASE_URL}/functions/v1/jarvis-agent`,{method:"POST",headers:{"Content-Type":"application/json","apikey":SUPABASE_ANON_KEY,"Authorization":`Bearer ${SUPABASE_ANON_KEY}`},body:JSON.stringify({message})});
+  const data=await r.json(); lat.textContent=Math.round(performance.now()-t)+" ms";
+  if(!r.ok) throw new Error(data.error||"Request failed");
+  reply.textContent=data.reply||"I received your command, but have no response.";
+  addLog("Response delivered");
+ }catch(e){reply.textContent="NEURAL CORE ERROR: "+e.message;addLog("Connection error: "+e.message)}
+}
+document.querySelector("#send").onclick=ask;
+input.addEventListener("keydown",e=>{if(e.key==="Enter")ask()});
+
+const mic=document.querySelector("#mic"), voiceState=document.querySelector("#voiceState");
+let recognition=null;
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+if(SR){
+  recognition=new SR();
+  recognition.lang="en-US";
+  recognition.interimResults=false;
+  recognition.continuous=false;
+  recognition.onstart=()=>{voiceState.textContent="LISTENING";mic.style.boxShadow="0 0 18px #55eaff";};
+  recognition.onend=()=>{voiceState.textContent="VOICE STANDBY";mic.style.boxShadow="";};
+  recognition.onerror=e=>{voiceState.textContent="VOICE ERROR: "+e.error;};
+  recognition.onresult=e=>{
+    input.value=e.results[0][0].transcript;
+    ask().then(()=>speak(reply.textContent));
+  };
+  mic.onclick=()=>{try{recognition.start()}catch{}};
+}else{
+  mic.disabled=true;
+  voiceState.textContent="VOICE INPUT NOT SUPPORTED";
+}
+function speak(text){
+  if(!("speechSynthesis" in window) || !text) return;
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);
+  u.rate=.95; u.pitch=.9; u.volume=1;
+  const voices=speechSynthesis.getVoices();
+  const v=voices.find(x=>/en/i.test(x.lang)&&/male|daniel|alex|google uk english male/i.test(x.name))||voices.find(x=>/^en/i.test(x.lang));
+  if(v)u.voice=v;
+  speechSynthesis.speak(u);
+}
+</script>
+</body>
+</html>
