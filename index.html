@@ -83,13 +83,13 @@ function speak(text) {
     const voices = speechSynthesis.getVoices();
 
     const maleVoice =
-      voices.find(v => /david|daniel|alex|mark|fred|george|james|male/i.test(v.name)) ||
-      voices.find(v => /en-US|en-GB|en-IN/i.test(v.lang));
-
+  voices.find(v =>
+    /google us english male|google uk english male|david|daniel|james|george|mark|fred|alex/i.test(v.name)
+  );
     const u = new SpeechSynthesisUtterance(text);
 
-    u.rate = 0.84;
-    u.pitch = 0.35;
+    u.rate = 0.88;
+    u.pitch = 0.68;
     u.volume = 1;
    
     if (maleVoice) {
