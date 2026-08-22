@@ -51,7 +51,10 @@ async function ask(){
   addLog("Response delivered");
  }catch(e){reply.textContent="NEURAL CORE ERROR: "+e.message;addLog("Connection error: "+e.message)}
 }
-document.querySelector("#send").onclick=ask;
+document.querySelector("#send").onclick=()=>{
+  unlockVoice();
+  ask();
+};
 input.addEventListener("keydown",e=>{if(e.key==="Enter")ask()});
 
 const mic=document.querySelector("#mic"), voiceState=document.querySelector("#voiceState");
@@ -69,11 +72,24 @@ if(SR){
     input.value=e.results[0][0].transcript;
     ask().then(()=>speak(reply.textContent));
   };
-  mic.onclick=()=>{try{recognition.start()}catch{}};
+  mic.onclick=()=>{
+  unlockVoice();
+  try{recognition.start()}catch{}
+};
+ 
 }else{
   mic.disabled=true;
   voiceState.textContent="VOICE INPUT NOT SUPPORTED";
 }
+
+ function unlockVoice() {
+  if (!("speechSynthesis" in window)) return;
+
+  const u = new SpeechSynthesisUtterance("");
+  u.volume = 0;
+  speechSynthesis.speak(u);
+ }
+ 
 function speak(text) {
   if (!("speechSynthesis" in window) || !text) return;
 
@@ -83,28 +99,27 @@ function speak(text) {
     const voices = speechSynthesis.getVoices();
 
     const maleVoice =
-  voices.find(v =>
-    /google us english male|google uk english male|david|daniel|james|george|mark|fred|alex/i.test(v.name)
-  );
+      voices.find(v => /david|daniel|james|george|mark|fred|alex/i.test(v.name)) ||
+      voices.find(v => /en-US|en-GB/i.test(v.lang));
+
     const u = new SpeechSynthesisUtterance(text);
 
+    u.voice = maleVoice || null;
+    u.lang = "en-US";
     u.rate = 0.88;
     u.pitch = 0.68;
     u.volume = 1;
-   
-    if (maleVoice) {
-      u.voice = maleVoice;
-    }
 
+    speechSynthesis.cancel();
     speechSynthesis.speak(u);
   };
 
   if (speechSynthesis.getVoices().length) {
     speakNow();
-   } else {
+  } else {
     speechSynthesis.onvoiceschanged = speakNow;
   }
-}
+ }
 </script>
 </body>
 </html>
