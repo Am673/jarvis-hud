@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#02070c">
+<title>JARVIS // Personal AI 2.0</title>
+<style>
+:root{--cyan:#55eaff;--blue:#238cff;--green:#77ffbd;--bg:#02070c;--panel:rgba(5,18,28,.86);--line:rgba(85,234,255,.25);--text:#dffbff;--muted:#79a6b4}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% 42%,#0b2638 0,#031018 35%,#02070c 72%);color:var(--text);font:14px system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh}
+.scan{position:fixed;inset:0;pointer-events:none;background:linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px);background-size:100% 4px}
+.app{max-width:1100px;margin:auto;padding:0 16px 110px}header{height:70px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;letter-spacing:.15em}.brand{font-weight:700}.brand span{color:var(--cyan);font-weight:400}.status{color:var(--green);font-size:11px}.dot{display:inline-block;width:7px;height:7px;background:var(--green);border-radius:50%;box-shadow:0 0 12px var(--green);margin-right:7px}
+.hero{text-align:center;padding:28px 0}.reactor{width:280px;height:280px;margin:auto;position:relative;display:grid;place-items:center}.ring{position:absolute;border:1px solid var(--cyan);border-radius:50%;inset:0;animation:spin 12s linear infinite}.r2{inset:23px;border-style:dashed;animation-duration:8s;animation-direction:reverse}.r3{inset:55px;box-shadow:0 0 40px #55eaff55,inset 0 0 35px #55eaff44}.core{width:88px;height:88px;border-radius:50%;background:radial-gradient(circle,#fff,#baf8ff 20%,#4ddfff 45%,#1678aa 70%,transparent 72%);box-shadow:0 0 35px var(--cyan),0 0 90px var(--blue);animation:pulse 2s infinite}.orbit{position:absolute;inset:-12px;border:1px solid #55eaff22;border-radius:50%}@keyframes spin{to{transform:rotate(360deg)}}@keyframes pulse{50%{transform:scale(1.08)}}
+.label{letter-spacing:.25em;color:var(--muted);font-size:11px;margin-top:15px}.reply{max-width:760px;margin:15px auto;color:#c9f7ff;line-height:1.6;min-height:44px}.voice{font-size:10px;letter-spacing:.18em;color:var(--muted)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:15px;margin:15px 0}.title{font-size:10px;letter-spacing:.18em;color:var(--muted);margin-bottom:12px}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.tile{border:1px solid var(--line);border-radius:10px;padding:13px;cursor:pointer;background:#05121ccc;transition:.15s}.tile:hover{border-color:var(--cyan);transform:translateY(-2px)}.tile b{display:block;margin-bottom:6px}.tile small{color:var(--muted);line-height:1.4}.pill{display:inline-block;margin-top:8px;color:var(--green);font-size:9px;border:1px solid #77ffbd55;border-radius:20px;padding:3px 7px}
+.log{font:11px ui-monospace,monospace;color:#87bdca;max-height:150px;overflow:auto}.log div{margin:5px 0}.accent{color:var(--cyan)}
+.chat{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);width:min(760px,calc(100% - 24px));display:flex;gap:7px;padding:8px;background:#020c13f5;border:1px solid var(--line);border-radius:12px;z-index:4}input{flex:1;background:transparent;border:0;outline:0;color:white;padding:12px}button{border:1px solid var(--line);background:#238cff22;color:var(--cyan);border-radius:8px;padding:0 15px;cursor:pointer}#mic{font-size:18px;min-width:52px}
+.notice{color:#ffd98a;font-size:11px;line-height:1.5;margin-top:10px}
+@media(max-width:700px){.grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:480px){.grid{grid-template-columns:1fr}.reactor{width:240px;height:240px}}
+</style>
+</head>
+<body>
+<div class="scan"></div>
+<div class="app">
+<header><div class="brand">JARVIS <span>// PERSONAL AI SYSTEM 2.0</span></div><div class="status"><i class="dot"></i>ONLINE</div></header>
+
+<section class="hero">
+<div class="reactor"><div class="ring"></div><div class="ring r2"></div><div class="ring r3"></div><div class="orbit"></div><div class="core"></div></div>
+<div class="label">J A R V I S &nbsp; // &nbsp; COMMAND CENTER</div>
+<div class="reply" id="reply">All systems online. How may I assist?</div>
+<div class="voice" id="voice">VOICE STANDBY</div>
+</section>
+
+<section class="panel">
+<div class="title">INTEGRATION MATRIX</div>
+<div class="grid">
+<div class="tile" onclick="command('YouTube: search for latest technology news')"><b>▶ YouTube</b><small>Open/search videos and channels.</small><span class="pill">READY</span></div>
+<div class="tile" onclick="command('Spotify: search for relaxing instrumental music')"><b>♫ Spotify</b><small>Open/search music and artists.</small><span class="pill">READY</span></div>
+<div class="tile" onclick="command('Swiggy: prepare a dinner order for owner approval')"><b>🛵 Swiggy</b><small>Prepare orders; owner approval required before purchase.</small><span class="pill">APPROVAL</span></div>
+<div class="tile" onclick="command('Zepto: prepare a grocery order for owner approval')"><b>🛒 Zepto</b><small>Prepare orders; owner approval required before purchase.</small><span class="pill">APPROVAL</span></div>
+</div>
+</section>
+
+<section class="panel">
+<div class="title">KNOWLEDGE CORE</div>
+<div class="grid">
+<div class="tile" onclick="command('Tell me the history of the world from early civilizations to the modern era')"><b>🌍 World History</b><small>Timelines, civilizations, wars, inventions and cultures.</small></div>
+<div class="tile" onclick="command('Compare major mythological traditions around the world')"><b>🏛 Mythology</b><small>Comparative stories and cultural context.</small></div>
+<div class="tile" onclick="command('Create a business operations plan and daily owner report')"><b>🏢 AI Employee</b><small>Planning, analysis, reporting and workflow support.</small></div>
+<div class="tile" onclick="command('Show my owner approval rules')"><b>🛡 Owner Control</b><small>High-impact actions remain owner-approved.</small></div>
+</div>
+</section>
+
+<section class="panel">
+<div class="title">ACTIVITY STREAM</div>
+<div class="log" id="log"><div><span class="accent">BOOT</span> JARVIS 2.0 online</div><div><span class="accent">CORE</span> Voice and approval gateway ready</div></div>
+<div class="notice">For real purchases, payments, account changes, messages, or other high-impact business actions, JARVIS prepares the action and asks the owner for approval rather than acting silently.</div>
+</section>
+
+<div class="chat"><input id="input" autocomplete="off" placeholder="Ask JARVIS anything…"><button id="mic" title="Voice input">🎙</button><button id="send">SEND</button></div>
+</div>
+
+<script>
+const SUPABASE_URL="https://grdbpodxopfnicbfulam.supabase.co/functions/v1/jarvis-agent";
+const input=document.getElementById("input"),reply=document.getElementById("reply"),log=document.getElementById("log"),mic=document.getElementById("mic"),voice=document.getElementById("voice");
+
+function addLog(t){const d=document.createElement("div");d.innerHTML='<span class="accent">'+new Date().toLocaleTimeString()+"</span> "+String(t).replace(/[<>]/g,"");log.prepend(d)}
+function command(t){input.value=t;ask()}
+
+async function ask(){
+ const message=input.value.trim(); if(!message)return;
+ input.value=""; reply.textContent="Processing…"; addLog("Command received");
+ try{
+   const r=await fetch(SUPABASE_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({message})});
+   const data=await r.json().catch(()=>({}));
+   if(!r.ok) throw new Error(data.error||"Request failed");
+   reply.textContent=data.reply||"Command completed.";
+   addLog("Response delivered");
+   speak(reply.textContent);
+ }catch(e){
+   reply.textContent="NEURAL CORE ERROR: "+e.message;
+   addLog("Connection error: "+e.message);
+ }
+}
+document.getElementById("send").onclick=ask;
+input.addEventListener("keydown",e=>{if(e.key==="Enter")ask()});
+
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+if(SR){
+ const rec=new SR(); rec.lang="en-US"; rec.interimResults=false; rec.continuous=false;
+ rec.onstart=()=>voice.textContent="LISTENING";
+ rec.onend=()=>voice.textContent="VOICE STANDBY";
+ rec.onerror=e=>voice.textContent="VOICE ERROR: "+e.error;
+ rec.onresult=e=>{input.value=e.results[0][0].transcript;ask()};
+ mic.onclick=()=>{try{rec.start()}catch{}};
+}else{mic.disabled=true;voice.textContent="VOICE INPUT NOT SUPPORTED"}
+
+function speak(text){
+ if(!("speechSynthesis" in window)||!text)return;
+ speechSynthesis.cancel();
+ const go=()=>{
+   const voices=speechSynthesis.getVoices();
+   const v=voices.find(x=>/david|daniel|james|george|mark|fred|alex/i.test(x.name))||voices.find(x=>/en-US|en-GB/i.test(x.lang));
+   const u=new SpeechSynthesisUtterance(text);
+   u.voice=v||null;u.lang="en-US";u.rate=.88;u.pitch=.62;u.volume=1;
+   speechSynthesis.speak(u);
+ };
+ const voices=speechSynthesis.getVoices();
+ if(voices.length)go();else speechSynthesis.onvoiceschanged=go;
+}
+</script>
+</body>
+</html>
