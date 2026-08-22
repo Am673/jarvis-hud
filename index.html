@@ -25,7 +25,7 @@ button{background:#063044;color:#8fefff;border:1px solid #2aa6c4;border-radius:1
 <div class="hint">Wake phrase works while this page is actively listening. Browser/OS restrictions may prevent background listening.</div>
 </main>
 <script>
-const ENDPOINT='https://grdbpodxopfnicbfulam.supabase.co/functions/v1/jarvis-agent';
+const ENDPOINT='https://grdbpodxopfnicbfulam.supabase.co/functions/v1/jarvis-agent';const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdyZGJwb2R4b3BmbmljYmZ1bGFtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODczMjE2MTIsImV4cCI6MjEwMjg5NzYxMn0.4VeJMArPa3YyjOo9A5kiQRRfPCkzA7qw_-iZe0oinKg';
 const q=document.getElementById('q'),r=document.getElementById('reply'),st=document.getElementById('status'),mic=document.getElementById('mic');
 let listening=false,armed=false;
 async function ask(message=q.value.trim()){
@@ -33,7 +33,7 @@ async function ask(message=q.value.trim()){
  q.value='';
  st.textContent='THINKING';
  try{
-  const res=await fetch(ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message})});
+  const res=await fetch(ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json','apikey':SUPABASE_ANON_KEY,'Authorization':'Bearer '+SUPABASE_ANON_KEY},body:JSON.stringify({message})});
   const d=await res.json();
   if(!res.ok)throw new Error(d.error||'Request failed');
   r.textContent=d.reply; st.textContent=listening?'LISTENING FOR WAKE WORD':'VOICE STANDBY'; speak(d.reply);
