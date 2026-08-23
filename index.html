@@ -37,6 +37,25 @@ h3{font-size:10px;letter-spacing:.18em;color:var(--muted);margin:0 0 14px}.metri
 <script>
 const SUPABASE_URL="https://grdbpodxopfnicbfulam.supabase.co";
 const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdyZGJwb2R4b3BmbmljYmZ1bGFtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODczMjE2MTIsImV4cCI6MjEwMjg5NzYxMn0.4VeJMArPa3YyjOo9A5kiQRRfPCkzA7qw_-iZe0oinKg";
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true
+  }
+});
+
+async function ensureAuth() {
+  let { data: { session } } = await sb.auth.getSession();
+
+  if (!session) {
+    const { data, error } = await sb.auth.signInAnonymously();
+    if (error) throw error;
+    session = data.session;
+  }
+
+  return session;
+}
+
 const reply=document.querySelector("#reply"), input=document.querySelector("#input"), log=document.querySelector("#log"), lat=document.querySelector("#lat");
 function addLog(t){const d=document.createElement("div");d.innerHTML=`<span class="accent">${new Date().toLocaleTimeString()}</span> ${t}`;log.prepend(d)}
 async function ask(){
