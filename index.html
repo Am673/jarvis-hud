@@ -44,7 +44,16 @@ async function ask(){
  input.value=""; reply.textContent="Processing…"; addLog("Command received");
  const t=performance.now();
  try{
-  const r=await fetch(`${SUPABASE_URL}/functions/v1/jarvis-agent`,{method:"POST",headers:{"Content-Type":"application/json","apikey":SUPABASE_ANON_KEY,"Authorization":`Bearer ${SUPABASE_ANON_KEY}`},body:JSON.stringify({message,speak:true})});
+  const session = await ensureAuth();
+
+const r = await fetch(`${SUPABASE_URL}/functions/v1/jarvis-agent`, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${session.access_token}`
+  },
+  body: JSON.stringify({ message })
+});
   const data=await r.json(); lat.textContent=Math.round(performance.now()-t)+" ms";
   if(!r.ok) throw new Error(data.error||"Request failed");
   reply.textContent=data.reply||"I received your command, but have no response.";
