@@ -32,30 +32,14 @@ h3{font-size:10px;letter-spacing:.18em;color:var(--muted);margin:0 0 14px}.metri
 <section class="center"><div class="reactor"><div class="ring r1"></div><div class="ring r2"></div><div class="ring r3"></div><div class="orbit"></div><div class="core"></div></div><div class="label">J A R V I S &nbsp; // &nbsp; STANDBY</div><div class="reply" id="reply">Good evening. Systems are online. How may I assist?</div><div id="voiceState" style="font-size:10px;letter-spacing:.18em;color:#79a6b4;margin-top:10px">VOICE STANDBY</div></section>
 <section class="card"><h3>ACTIVITY STREAM</h3><div class="log" id="log"><div><span class="accent">00:00:01</span> Boot sequence complete</div><div><span class="accent">00:00:02</span> Neural interface ready</div><div><span class="accent">00:00:03</span> Awaiting command</div></div></section>
 </main>
-<div class="chat"><input id="input" autocomplete="off" placeholder="Ask JARVIS anything…"><button id="mic" title="Voice input">🎙</button><button id="send">SEND</button></div>
-</div>
-<script 
-  src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-const SUPABASE_URL="https://grdbpodxopfnicbfulam.supabase.co";
-const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdyZGJwb2R4b3BmbmljYmZ1bGFtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODczMjE2MTIsImV4cCI6MjEwMjg5NzYxMn0.4VeJMArPa3YyjOo9A5kiQRRfPCkzA7qw_-iZe0oinKg";
-const { createClient } = supabase;
+<div class="chat">...</div>
 
-const sb = createClient(
-  SUPABASE_URL,
-  SUPABASE_ANON_KEY
-);
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-async function ensureAuth() {
-  const { data: { session } } = await sb.auth.getSession();
+<script>
+const SUPABASE_URL = "...";
+const SUPABASE_ANON_KEY = "...";
 
-  if (session) return session;
-
-  const { data, error } = await sb.auth.signInAnonymously();
-
-  if (error) throw error;
-
-  return data.session;
-}
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: {
     persistSession: true,
