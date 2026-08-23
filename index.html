@@ -61,6 +61,7 @@ async function ensureAuth() {
 
 const reply=document.querySelector("#reply"), input=document.querySelector("#input"), log=document.querySelector("#log"), lat=document.querySelector("#lat");
 function addLog(t){const d=document.createElement("div");d.innerHTML=`<span class="accent">${new Date().toLocaleTimeString()}</span> ${t}`;log.prepend(d)}
+
 async function ask(){
  const message=input.value.trim(); if(!message)return;
  input.value=""; reply.textContent="Processing…"; addLog("Command received");
