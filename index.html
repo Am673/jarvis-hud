@@ -34,9 +34,28 @@ h3{font-size:10px;letter-spacing:.18em;color:var(--muted);margin:0 0 14px}.metri
 </main>
 <div class="chat"><input id="input" autocomplete="off" placeholder="Ask JARVIS anything…"><button id="mic" title="Voice input">🎙</button><button id="send">SEND</button></div>
 </div>
-<script>
+<script 
+  src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 const SUPABASE_URL="https://grdbpodxopfnicbfulam.supabase.co";
 const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdyZGJwb2R4b3BmbmljYmZ1bGFtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODczMjE2MTIsImV4cCI6MjEwMjg5NzYxMn0.4VeJMArPa3YyjOo9A5kiQRRfPCkzA7qw_-iZe0oinKg";
+const { createClient } = supabase;
+
+const sb = createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);
+
+async function ensureAuth() {
+  const { data: { session } } = await sb.auth.getSession();
+
+  if (session) return session;
+
+  const { data, error } = await sb.auth.signInAnonymously();
+
+  if (error) throw error;
+
+  return data.session;
+}
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: {
     persistSession: true,
